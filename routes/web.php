@@ -31,9 +31,11 @@ Route::prefix('cart')->name('cart.')->group(function () {
 
 // مسارات الزوار (Guest) - التسجيل والدخول
 Route::middleware('guest')->group(function () {
-    Route::get('/register', [CustomerAuthController::class, 'showRegister'])->name('customer.register');
+Route::get('/register', [CustomerAuthController::class, 'showRegister'])->name('customer.register');
     Route::post('/register', [CustomerAuthController::class, 'register'])->name('customer.register.post');
-    Route::get('/login', [CustomerAuthController::class, 'showLogin'])->name('login');
+    
+    // تم التحديث هنا ليطابق طلبك
+    Route::get('/login', [CustomerAuthController::class, 'showLogin'])->name('customer.login');
     Route::post('/login', [CustomerAuthController::class, 'login'])->name('customer.login.post');
 });
 

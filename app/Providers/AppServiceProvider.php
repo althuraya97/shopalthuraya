@@ -29,4 +29,9 @@ class AppServiceProvider extends ServiceProvider
 
     Paginator::useBootstrapFive();
     }
+
+    // إجبار الموقع على استخدام HTTPS في الاستضافة
+    if (config('app.env') === 'production' || env('FORCE_HTTPS', true)) {
+        URL::forceScheme('https');
+    }
 }

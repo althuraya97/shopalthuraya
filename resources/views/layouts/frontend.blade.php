@@ -118,7 +118,8 @@
                 <ul class="navbar-nav ms-auto align-items-lg-center">
                     @guest
                         <li class="nav-item">
-<a class="nav-link" href="{{ route('login') }}">تسجيل الدخول</a>                        </li>
+                            <a class="nav-link" href="{{ route('customer.login') }}">تسجيل الدخول</a>
+                       </li>
                         <li class="nav-item mt-2 mt-lg-0">
                             <a class="btn btn-primary rounded-pill px-4 ms-lg-3 w-100" href="{{ route('customer.register') }}">إنشاء حساب</a>
                         </li>

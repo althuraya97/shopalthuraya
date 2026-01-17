@@ -29,8 +29,8 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.login.submit') }}" method="POST">
-        @csrf
+<form action="{{ url('/admin/login') }}" method="POST">
+    @csrf
         <div class="mb-3">
             <label class="form-label fw-bold small">البريد الإلكتروني</label>
             <input type="email" name="email" class="form-control bg-light border-0" required placeholder="admin@edraakmc.com" value="{{ old('email') }}">

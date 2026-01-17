@@ -81,7 +81,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::get('/orders/{order}/invoice', [OrderController::class, 'generateInvoice'])->name('orders.invoice');
     // 2. المسارات المحمية (تحتاج تسجيل دخول + صلاحية مسؤول)
     // نستخدم 'auth' للتأكد من تسجيل الدخول، و 'admin' (الذي سجلته في Kernel) للتأكد من أنه مسؤول
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth', 'admin'])->group(function () {
 
         // الصفحة الرئيسية للوحة التحكم
         Route::get('/dashboard', [OrderController::class, 'adminIndex'])->name('dashboard');

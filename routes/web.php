@@ -11,6 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Frontend\CartController;
 
+
 /*
 |--------------------------------------------------------------------------
 | واجهة المستخدم (Frontend - للزبائن والزوار)

@@ -16,28 +16,32 @@ class CartController extends Controller
 
     // إضافة منتج للسلة
     public function add(Request $request) {
-        $product = Product::findOrFail($request->product_id);
-        $cart = session()->get('cart', []);
+    $product = Product::findOrFail($request->product_id);
 
-        // معرف فريد للمنتج مع مقاسه (للسماح بإضافة نفس المنتج بمقاسين مختلفين)
-        $cartItemId = $product->id . '-' . ($request->size ?? 'default');
-
-        if(isset($cart[$cartItemId])) {
-            $cart[$cartItemId]['quantity'] += $request->quantity;
-        } else {
-            $cart[$cartItemId] = [
-                "id" => $product->id,
-                "name" => $product->name,
-                "quantity" => $request->quantity,
-                "price" => $product->price,
-                "size" => $request->size,
-                "image" => $product->image
-            ];
-        }
-
-        session()->put('cart', $cart);
-        return redirect()->route('cart.index')->with('success', 'تمت إضافة المنتج للسلة بنجاح!');
+    // التأكد من توفر الكمية المطلوبة
+    if ($product->stock < $request->quantity) {
+        return back()->with('error', 'عذراً، الكمية المطلوبة غير متوفرة حالياً.');
     }
+
+    $cart = session()->get('cart', []);
+    $cartItemId = $product->id . '-' . ($request->size ?? 'default');
+
+    if(isset($cart[$cartItemId])) {
+        $cart[$cartItemId]['quantity'] += $request->quantity;
+    } else {
+        $cart[$cartItemId] = [
+            "id"       => $product->id,
+            "name"     => $product->name,
+            "quantity" => $request->quantity,
+            "price"    => $product->price,
+            "size"     => $request->size,
+            "image"    => $product->image
+        ];
+    }
+
+    session()->put('cart', $cart);
+    return redirect()->route('cart.index')->with('success', 'تمت الإضافة للسلة!');
+}
 
     // حذف منتج من السلة
     public function remove($id) {

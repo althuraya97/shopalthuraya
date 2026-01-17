@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Str;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\SubCategory;
@@ -13,18 +14,20 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        // جلب الأقسام الرئيسية لعرضها في الفلتر بشكل منظم
         $categories = Category::whereNull('parent_id')->with('children')->get();
 
         $query = Product::where('is_archived', false)
                         ->with(['category', 'subCategories']);
 
-        // البحث بالاسم
+        // التحديث: البحث بالاسم أو برقم المنتج (ID)
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('id', $searchTerm); // البحث بالرقم المباشر
+            });
         }
 
-        // التصفية حسب القسم المختار (الأساسي المرتبط بجدول المنتجات مباشرة)
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
         }
@@ -36,10 +39,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        // جلب الأقسام الرئيسية مع أبنائها للقسم المرجعي الأساسي
         $categories = Category::whereNull('parent_id')->with('children')->get();
-
-        // جلب الأقسام الفرعية من الموديل المستقل لغرض الـ Multi-select (الوسوم)
         $subCategories = SubCategory::all();
 
         return view('admin.products.create', compact('categories', 'subCategories'));
@@ -51,20 +51,24 @@ class ProductController extends Controller
             'name' => 'required|max:255',
             'description' => 'required',
             'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0', // إضافة التحقق من المخزون
             'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'sizes' => 'nullable|array',
-            'category_id' => 'required|exists:categories,id', // القسم المرجعي الأساسي
+            'category_id' => 'required|exists:categories,id',
             'sub_categories' => 'nullable|array',
             'sub_categories.*' => 'exists:sub_categories,id'
         ]);
 
         $imagePath = $request->file('image')->store('products', 'public');
+        $slug = Str::slug($request->name, '-', 'ar') ?: str_replace(' ', '-', $request->name) . '-' . time();
 
-        DB::transaction(function () use ($request, $imagePath) {
+        DB::transaction(function () use ($request, $imagePath, $slug) {
             $product = Product::create([
                 'name' => $request->name,
+                'slug' => $slug,
                 'description' => $request->description,
                 'price' => $request->price,
+                'stock' => $request->stock, // حفظ كمية المخزون
                 'image' => $imagePath,
                 'sizes' => $request->sizes,
                 'category_id' => $request->category_id,
@@ -83,9 +87,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::whereNull('parent_id')->with('children')->get();
-        $subCategories = SubCategory::all(); // جلب كافة الأقسام الفرعية لجدول الربط
-
-        // شحن العلاقات للتأكد من المربعات المحددة (Checked) في Blade
+        $subCategories = SubCategory::all();
         $product->load('subCategories');
 
         return view('admin.products.edit', compact('product', 'categories', 'subCategories'));
@@ -97,6 +99,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required',
             'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0', // إضافة المخزون في التحديث
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'category_id' => 'required|exists:categories,id',
             'sizes' => 'nullable|array',
@@ -104,7 +107,8 @@ class ProductController extends Controller
             'sub_categories.*' => 'exists:sub_categories,id'
         ]);
 
-        $data = $request->only(['name', 'description', 'price', 'sizes', 'category_id', 'return_policy']);
+        // إضافة stock للمصفوفة المراد تحديثها
+        $data = $request->only(['name', 'description', 'price', 'stock', 'sizes', 'category_id', 'return_policy']);
 
         if ($request->hasFile('image')) {
             if ($product->image) {
@@ -115,7 +119,6 @@ class ProductController extends Controller
 
         DB::transaction(function () use ($product, $data, $request) {
             $product->update($data);
-            // مزامنة الأقسام الفرعية في الجدول الوسيط
             $product->subCategories()->sync($request->sub_categories ?? []);
         });
 
@@ -124,7 +127,6 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        // فحص وجود مبيعات سابقة
         $hasOrders = DB::table('order_items')->where('product_id', $product->id)->exists();
 
         if ($hasOrders) {
@@ -139,6 +141,20 @@ class ProductController extends Controller
         }
 
         return redirect()->route('admin.products.index')->with('success', $message);
+    }
+
+    // تم تحديث هذه الدالة مسبقاً وهي تعمل بشكل صحيح
+    public function updateStock(Request $request, Product $product)
+    {
+        $request->validate([
+            'stock' => 'required|integer|min:0',
+        ]);
+
+        $product->update([
+            'stock' => $request->stock
+        ]);
+
+        return back()->with('success', 'تم تحديث كمية المخزون بنجاح للمنتج: ' . $product->name);
     }
 
     public function toggleCategory(Request $request, Product $product)

@@ -49,26 +49,39 @@ class OrderController extends Controller
      * معالجة تأكيد الطلب وحفظ البيانات
      * معيار القبول: حماية من SQL Injection والتحقق من الحقول الإجبارية
      */
-   public function store(Request $request) {
-    $cart = session()->get('cart');
+  public function store(Request $request) {
+    // 1. التحقق من البيانات المدخلة (Validation)
+    $request->validate([
+        'address' => 'required|string|max:255',
+        'city'    => 'required|string|max:100',
+        'country' => 'required|string',
+        'zip_code'=> 'required|numeric',
+    ]);
 
-    // التأكد من وجود سلة
-    if (!$cart || count($cart) == 0) {
+    $cart = session()->get('cart', []);
+    if (empty($cart)) {
         return redirect()->route('shop.index')->with('error', 'سلتك فارغة!');
     }
 
-    // 1. حساب المجموع الكلي
+    // 2. حساب المجموع الكلي
     $total = array_sum(array_map(fn($item) => $item['price'] * $item['quantity'], $cart));
 
-    // 2. إنشاء سجل الطلب
+    // 3. إنشاء سجل الطلب مع بيانات العنوان
     $order = \App\Models\Order::create([
-        'user_id' => auth()->id(),
-        'total_price' => $total,
-        'status' => 'pending', // حالة الطلب الافتراضية
+        'user_id'        => auth()->id(),
+        'total_price'    => $total,
+        'status'         => 'pending',
+        'address'        => $request->address,
+        'apartment'      => $request->apartment,
+        'city'           => $request->city,
+        'state'          => $request->state,
+        'country'        => $request->country,
+        'zip_code'       => $request->zip_code,
+        'payment_method' => $request->payment_method ?? 'الدفع عند الاستلام',
     ]);
 
-    // 3. إنشاء سجلات المنتجات داخل الطلب
-    foreach ($cart as $id => $details) {
+    // 4. إنشاء سجلات المنتجات داخل الطلب
+    foreach ($cart as $details) {
         \App\Models\OrderItem::create([
             'order_id'   => $order->id,
             'product_id' => $details['id'],
@@ -78,13 +91,9 @@ class OrderController extends Controller
         ]);
     }
 
-    // 4. تفريغ السلة بعد نجاح الحفظ
     session()->forget('cart');
-
-    return redirect()->route('orders.success', $order->id)
-                     ->with('success', 'شكراً لك! تم استلام طلبك بنجاح.');
+    return redirect()->route('orders.index')->with('success', 'تم استلام طلبك بنجاح رقم #' . $order->id);
 }
-
     /**
      * عرض تفاصيل طلب معين للزبون أو الآدمن
      */
@@ -125,4 +134,9 @@ class OrderController extends Controller
 
         return back()->with('success', 'تم تحديث حالة الطلب بنجاح.');
     }
+    public function generateInvoice(Order $order)
+{
+    // حالياً سنعرض صفحة بسيطة، لاحقاً يمكنك استخدام مكتبة مثل DomPDF
+    return view('admin.orders.invoice', compact('order'));
+}
 }

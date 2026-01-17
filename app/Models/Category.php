@@ -24,5 +24,15 @@ public function products()
 {
     return $this->hasMany(Product::class);
 }
+protected static function boot()
+{
+    parent::boot();
 
+    static::creating(function ($category) {
+        // إذا لم يتم تعيين slug يدوياً، قم بتوليده من الاسم
+        if (empty($category->slug)) {
+            $category->slug = str_replace(' ', '-', $category->name);
+        }
+    });
+}
 }

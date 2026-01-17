@@ -7,7 +7,7 @@
             <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
                 <div class="card-header bg-primary py-4 text-center border-0">
                     <h3 class="fw-bold text-white mb-0">إنشاء حساب جديد</h3>
-                    <p class="text-white-50 small mb-0 mt-2">انضم إلى متجر Zay واستمتع بتجربة تسوق فريدة</p>
+                    <p class="text-white-50 small mb-0 mt-2">انضم إلى متجر مباهج الخد واستمتع بتجربة تسوق فريدة</p>
                 </div>
 
                 <div class="card-body p-4 p-md-5">

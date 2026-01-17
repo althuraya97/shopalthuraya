@@ -14,8 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // هنا نقوم بتعريف الاسم المستعار (Alias) للـ Middleware الخاص بك
         $middleware->alias([
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,
-        ]);
+'admin' => \App\Http\Middleware\CheckAdmin::class,]);
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {

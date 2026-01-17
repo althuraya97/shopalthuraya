@@ -9,11 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up() {
+   public function up(): void
+{
     Schema::create('categories', function (Blueprint $table) {
         $table->id();
         $table->string('name');
-        // هذا السطر يسمح بجعل القسم رئيسي أو فرعي في نفس الجدول
+        $table->string('slug')->unique(); // ضعه هنا مباشرة بعد الاسم، سيكون مكانه تلقائياً بعده
         $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('cascade');
         $table->timestamps();
     });

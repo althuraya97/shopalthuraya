@@ -38,7 +38,7 @@
                                         <td>
                                             <span class="fw-bold">{{ $details['quantity'] }}</span>
                                         </td>
-                                        <td class="fw-bold text-primary">{{ number_format($details['price'] * $details['quantity'], 2) }} ر.س</td>
+                                        <td class="fw-bold text-primary">{{ number_format($details['price'] * $details['quantity'], 2) }} ر.ع</td>
                                         <td>
                                             <form action="{{ route('cart.remove', $id) }}" method="POST">
                                                 @csrf
@@ -66,7 +66,7 @@
                     <h5 class="fw-bold mb-4 border-bottom pb-2">ملخص الحساب</h5>
                     <div class="d-flex justify-content-between mb-3">
                         <span class="text-muted">المجموع الفرعي:</span>
-                        <span class="fw-bold">{{ number_format($total, 2) }} ر.س</span>
+                        <span class="fw-bold">{{ number_format($total, 2) }} ر.ع</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3 text-success">
                         <span>الشحن:</span>
@@ -75,15 +75,14 @@
                     <hr>
                     <div class="d-flex justify-content-between mb-4 mt-2">
                         <span class="fs-5 fw-bold text-dark">الإجمالي:</span>
-                        <span class="fs-4 fw-bold text-primary">{{ number_format($total, 2) }} ر.س</span>
+                        <span class="fs-4 fw-bold text-primary">{{ number_format($total, 2) }} ر.ع</span>
                     </div>
 
                     @auth
-                        <a href="{{ route('orders.store') }}"
-                           onclick="event.preventDefault(); document.getElementById('checkout-form').submit();"
-                           class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm py-3">
-                            <i class="fas fa-check-circle ms-2"></i> إتمام عملية الشراء
-                        </a>
+                       <a href="{{ route('checkout.index') }}" {{-- افترضنا أن هذا هو رابط صفحة تفاصيل الشحن --}}
+       class="btn btn-primary btn-lg w-100 rounded-pill shadow-sm py-3">
+        <i class="fas fa-arrow-left ms-2"></i> الانتقال لتفاصيل الشحن
+    </a>
                         <form id="checkout-form" action="{{ route('orders.store') }}" method="POST" style="display: none;">
                             @csrf
                         </form>

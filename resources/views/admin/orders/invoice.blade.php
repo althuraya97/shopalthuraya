@@ -42,8 +42,8 @@
     <div class="invoice-box">
         <div class="invoice-header d-flex justify-content-between align-items-center">
             <div>
-                <h2 class="text-success fw-bold mb-0">EdraakMC Store</h2>
-                <p class="text-muted mb-0">متجرك الموثوق للأناقة</p>
+                <h2 class="text-success fw-bold mb-0">مباهج الخد</h2>
+                <p class="text-muted mb-0">  مباهج كله مباهج</p>
             </div>
             <div class="text-end">
                 <h4 class="fw-bold text-dark">فاتورة شراء</h4>
@@ -83,8 +83,8 @@
                         <td class="text-start fw-bold">{{ $item->product->name }}</td>
                         <td><span class="badge bg-light text-dark border">{{ $item->size ?? '-' }}</span></td>
                         <td>{{ $item->quantity }}</td>
-                        <td>{{ number_format($item->price, 2) }} ر.س</td>
-                        <td class="fw-bold">{{ number_format($item->price * $item->quantity, 2) }} ر.س</td>
+                        <td>{{ number_format($item->price, 2) }} </td>
+                        <td class="fw-bold">{{ number_format($item->price * $item->quantity, 2) }} </td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -95,7 +95,7 @@
             <div class="col-md-5">
                 <div class="d-flex justify-content-between p-2 border-bottom">
                     <span>المجموع الفرعي:</span>
-                    <span>{{ number_format($order->total_price, 2) }} ر.س</span>
+                    <span>{{ number_format($order->total_price, 2) }} ر.ع</span>
                 </div>
                 <div class="d-flex justify-content-between p-2 border-bottom">
                     <span>الشحن:</span>
@@ -103,14 +103,14 @@
                 </div>
                 <div class="d-flex justify-content-between p-2 bg-success text-white rounded mt-2">
                     <span class="fw-bold">المجموع الكلي:</span>
-                    <span class="fw-bold fs-5">{{ number_format($order->total_price, 2) }} ر.س</span>
+                    <span class="fw-bold fs-5">{{ number_format($order->total_price, 2) }} ر.ع</span>
                 </div>
             </div>
         </div>
 
         <div class="mt-5 pt-4 text-center border-top">
-            <p class="text-muted small">شكراً لتسوقكم من EdraakMC Store! نأمل برؤيتكم مجدداً.</p>
-            <p class="fw-bold text-success mb-0">www.edraakmc.com</p>
+            <p class="text-muted small">شكراً لتسوقكم من مباهج الخد ! نأمل برؤيتكم مجدداً.</p>
+            <p class="fw-bold text-success mb-0">www.مباهجالخد.com</p>
         </div>
     </div>
 </div>

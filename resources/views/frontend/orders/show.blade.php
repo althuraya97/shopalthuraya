@@ -35,9 +35,9 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>{{ number_format($item->price, 2) }} ر.س</td>
+                                <td>{{ number_format($item->price, 2) }} ر.ع</td>
                                 <td>{{ $item->quantity }}</td>
-                                <td class="fw-bold">{{ number_format($item->price * $item->quantity, 2) }} ر.س</td>
+                                <td class="fw-bold">{{ number_format($item->price * $item->quantity, 2) }} ر.ع</td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -46,7 +46,7 @@
                 <div class="card-footer bg-white p-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fs-5 fw-bold">إجمالي الطلب:</span>
-                        <span class="fs-4 fw-bold text-primary">{{ number_format($order->total_price, 2) }} ر.س</span>
+                        <span class="fs-4 fw-bold text-primary">{{ number_format($order->total_price, 2) }} ر.ع</span>
                     </div>
                 </div>
             </div>

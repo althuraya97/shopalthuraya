@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-protected $fillable = ['user_id', 'total_price', 'status'];
-    /**
+// App\Models\Order.php
+protected $fillable = [
+    'user_id', 'total_price', 'status',
+    'address', 'apartment', 'city', 'state', 'country', 'zip_code', 'payment_method'
+];    /**
      * الحصول على الزبون الذي صاحب الطلب
      */
     public function user(): BelongsTo

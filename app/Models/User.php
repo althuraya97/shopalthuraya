@@ -17,8 +17,14 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $fillable = ['first_name', 'last_name', 'email', 'password', 'role'];
-
+protected $fillable = [
+    'first_name',
+    'last_name',
+    'email',
+    'password',
+    'is_admin',
+    // 'name', <--- تأكد من حذف هذا السطر إذا كان موجوداً
+];
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -39,6 +45,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean', // أضف هذا السطر
         ];
     }
 }

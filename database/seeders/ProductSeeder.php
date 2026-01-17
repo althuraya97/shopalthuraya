@@ -2,34 +2,53 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Category;
+use App\Models\SubCategory;
 use App\Models\Product;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
-class ProductSeeder extends Seeder
+class DatabaseSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // 1. إنشاء أقسام رئيسية وفرعية
-        $clothing = Category::create(['name' => 'ملابس']);
-        $clothing->children()->create(['name' => 'رجالي']);
-        $clothing->children()->create(['name' => 'نسائي']);
+        // 1. تعريف الأقسام الرئيسية والفرعية
+        $data = [
+            'الرجال' => ['عناية باللحية', 'عطور رجالية', 'شامبو وبلسم', 'عناية بالبشرة'],
+            'النساء' => ['مكياج', 'عناية بالشعر', 'مرطبات بشرة', 'عطور نسائية'],
+            'الأطفال' => ['شامبو لا دموع', 'بودرة أطفال', 'لوشن للأطفال', 'زيوت طبيعية'],
+        ];
 
-        $electronics = Category::create(['name' => 'إلكترونيات']);
-        $electronics->children()->create(['name' => 'هواتف']);
-
-        // 2. إنشاء 15 منتجاً تجريبياً
-        for ($i = 1; $i <= 15; $i++) {
-            Product::create([
-                'name' => "منتج تجريبي رقم $i",
-                'description' => "هذا وصف مفصل للمنتج رقم $i. يتميز بجودة عالية وتصميم عصري يناسب جميع الأذواق.",
-                'price' => rand(100, 1000),
-                'category_id' => $clothing->id,
-                'image' => 'products/default.jpg', // تأكد من وجود صورة بهذا الاسم أو غيرها لاحقاً
-                'sizes' => ['S', 'M', 'L', 'XL'],
-                'return_policy' => 'يمكن استرجاع المنتج خلال 14 يوماً من تاريخ الشراء.',
-                'is_archived' => false,
+        foreach ($data as $mainCat => $subs) {
+            // إنشاء القسم الرئيسي
+            $category = Category::create([
+                'name' => $mainCat,
+                'slug' => Str::slug($mainCat, '-'),
             ]);
+
+            foreach ($subs as $subName) {
+                // إنشاء القسم الفرعي (الوسم)
+                $subCategory = SubCategory::create([
+                    'name' => $subName,
+                    'category_id' => $category->id, // إذا كنت تربطهم مباشرة
+                ]);
+
+                // 2. إنشاء منتجات عشوائية لكل قسم فرعي
+                for ($i = 1; $i <= 5; $i++) {
+                    $product = Product::create([
+                        'category_id' => $category->id,
+                        'name' => "منتج $subName المميز $i",
+                        'description' => "هذا الوصف لمنتج $subName، يوفر أفضل نتائج العناية والجودة العالية.",
+                        'price' => rand(50, 500),
+                        'sizes' => json_encode(['Small', 'Medium', 'Large']), // تخزين كـ JSON كما في Controller الخاص بك
+                        'image' => null, // يمكنك وضع مسار صورة افتراضية هنا
+                        'is_archived' => false,
+                    ]);
+
+                    // ربط المنتج بالقسم الفرعي (علاقة Many-to-Many)
+                    $product->subCategories()->attach($subCategory->id);
+                }
+            }
         }
     }
 }

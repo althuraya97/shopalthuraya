@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Str; // تأكد من إضافة هذا السطر في أعلى الملف
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -95,27 +95,19 @@ class CategoryController extends Controller
     /**
      * حذف القسم مع حماية المنتجات والأقسام الفرعية
      */
-    public function destroy($id)
-    {
-        $category = Category::with(['children', 'products'])->findOrFail($id);
+  public function destroy($id)
+{
+    $category = Category::with(['children'])->findOrFail($id);
+    $allIds = $category->children->pluck('id')->push($category->id);
 
-        // 1. فحص المنتجات المرتبطة (بالأب أو الأبناء)
-        $childIds = $category->children->pluck('id');
-        $hasProducts = $category->products()->exists() || Product::whereIn('category_id', $childIds)->exists();
+    // بدلاً من التوقف، نقوم بنقل المنتجات إلى القسم رقم 1 (تأكد من وجود ID رقم 1)
+    Product::whereIn('category_id', $allIds)->update(['category_id' => 1]);
 
-        if ($hasProducts) {
-            return back()->with('error', 'عذراً، لا يمكن حذف هذا التصنيف لوجود منتجات مرتبطة به مباشرة أو بأقسامه الفرعية.');
-        }
+    DB::transaction(function () use ($category) {
+        $category->children()->delete();
+        $category->delete();
+    });
 
-        // 2. الحذف الآمن باستخدام Transaction
-        DB::transaction(function () use ($category) {
-            // حذف الأبناء أولاً
-            $category->children()->delete();
-            // حذف الأب
-            $category->delete();
-        });
-
-        return redirect()->route('admin.categories.index')
-                         ->with('success', 'تم حذف التصنيف وجميع الأقسام الفرعية التابعة له بنجاح.');
-    }
+    return redirect()->route('admin.categories.index')->with('success', 'تم حذف القسم ونقل المنتجات إلى القسم العام.');
+}
 }

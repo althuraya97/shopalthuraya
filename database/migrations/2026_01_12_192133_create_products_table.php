@@ -21,6 +21,7 @@ return new class extends Migration
         $table->json('sizes')->nullable();
         $table->foreignId('category_id')->constrained()->onDelete('cascade'); // الربط هنا
         $table->boolean('is_archived')->default(false);
+        $table->text('return_policy')->nullable(); // نضعه nullable لأنه قد لا يتوفر لجميع المنتجات
         $table->timestamps();
     });
 }

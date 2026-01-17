@@ -40,7 +40,7 @@ class CustomerAuthController extends Controller
 
     // عرض صفحة تسجيل الدخول
     public function showLogin() {
-        return view('auth.login');
+        return view('frontend.auth.login');
     }
 
     // تنفيذ عملية تسجيل الدخول

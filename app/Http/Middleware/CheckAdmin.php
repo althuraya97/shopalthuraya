@@ -4,21 +4,23 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 class CheckAdmin
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next)
-{
-    if (Auth::check() && Auth::user()->role === 'admin') {
-        return $next($request);
-    }
+    {
+        // التحقق: إذا كان المستخدم مسجل دخول وهو مسؤول فعلاً
+        if (Auth::check() && Auth::user()->is_admin == 1) {
+            return $next($request);
+        }
 
-    abort(403, 'غير مسموح لك بالوصول لهذه الصفحة.');
-}
+        // إذا كان مسجل دخول كزبون عادي ويحاول دخول روابط الإدارة
+        if (Auth::check()) {
+            return redirect('/')->with('error', 'غير مسموح لك بالوصول للوحة التحكم.');
+        }
+
+        // إذا لم يكن مسجلاً أصلاً، يوجه لصفحة دخول الأدمن
+        return redirect()->route('admin.login');
+    }
 }

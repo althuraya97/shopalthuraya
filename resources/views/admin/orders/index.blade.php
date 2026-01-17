@@ -10,7 +10,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-uppercase mb-2 opacity-75">إجمالي المبيعات (المستلمة)</h6>
-                            <h3 class="mb-0 fw-bold">{{ number_format(\App\Models\Order::where('status', 'delivered')->sum('total_price'), 2) }} ر.س</h3>
+                            <h3 class="mb-0 fw-bold">{{ number_format(\App\Models\Order::where('status', 'delivered')->sum('total_price'), 2) }} ر.ع</h3>
                         </div>
                         <i class="fas fa-money-bill-wave fa-3x opacity-25"></i>
                     </div>
@@ -108,7 +108,7 @@
                             </td>
                             <td class="small">{{ $order->created_at->format('Y/m/d H:i') }}</td>
                             <td><span class="badge bg-light text-dark border">{{ $order->items->sum('quantity') }} قطع</span></td>
-                            <td class="fw-bold text-primary">{{ number_format($order->total_price, 2) }} ر.س</td>
+                            <td class="fw-bold text-primary">{{ number_format($order->total_price, 2) }} ر.ع</td>
                             <td>
                                 @php
                                     $statusClass = match($order->status) {

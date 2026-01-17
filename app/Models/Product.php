@@ -10,36 +10,34 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-    'name',
-    'slug',
-    'description',
-    'price',
-    'image',
-    'stock',
-    'category_id',
-    'is_archived'
-];
+        'name',
+        'slug',
+        'description',
+        'price',
+        'image',
+        'stock',         // تصحيح: اسم الحقل فقط هنا
+        'sizes',
+        'category_id',
+        'return_policy',
+        'is_archived',
+    ];
 
-    // هنا تضع الكود الخاص بالـ casts
     protected $casts = [
-        'sizes' => 'array', // لتحويل الحقل من JSON إلى مصفوفة PHP والعكس
+        'stock' => 'integer',      // التحديث: هنا يتم تعريف نوع البيانات
+        'sizes' => 'array',
+        'price' => 'decimal:2',
         'is_archived' => 'boolean',
     ];
 
-    /**
-     * علاقة المنتج بالتصنيفات الفرعية (Many-to-Many)
-     */
-  public function subCategories()
-{
-    return $this->belongsToMany(
-        SubCategory::class,    // الموديل المرتبط
-        'product_subcategory', // اسم الجدول كما هو في الـ Migration الخاص بك
-        'product_id',          // المفتاح الأجنبي للمنتج
-        'sub_category_id'      // المفتاح الأجنبي للقسم الفرعي
-    )->withTimestamps();
-}
-public function category()
-{
-    return $this->belongsTo(Category::class);
-}
+    // علاقة المنتج بالقسم الرئيسي
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    // علاقة المنتج بالأقسام الفرعية (الجدول الوسيط)
+    public function subCategories()
+    {
+        return $this->belongsToMany(SubCategory::class, 'product_sub_category');
+    }
 }

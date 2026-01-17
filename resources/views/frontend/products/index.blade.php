@@ -33,15 +33,19 @@
                 </div>
             </div>
 
-            <div class="mb-3">
-                <label class="form-label fw-bold small">المقاس</label>
-                <select name="size" class="form-select shadow-sm">
-                    <option value="">كل المقاسات</option>
-                    @foreach(['S', 'M', 'L', 'XL', 'XXL'] as $size)
-                        <option value="{{ $size }}" {{ request('size') == $size ? 'selected' : '' }}>{{ $size }}</option>
-                    @endforeach
-                </select>
-            </div>
+            {{-- الجزء الخاص بالمقاسات في ملف index.blade.php --}}
+<div class="mb-3">
+    <label class="form-label fw-bold small text-secondary">المقاس المطلوب</label>
+    <select name="size" class="form-select border-0 bg-light shadow-sm">
+        <option value="">كل المقاسات</option>
+        {{-- عرض قائمة المقاسات كاملة --}}
+        @foreach(['S', 'M', 'L', 'XL', 'XXL', '3XL'] as $size)
+            <option value="{{ $size }}" {{ request('size') == $size ? 'selected' : '' }}>
+                {{ $size }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
             <button type="submit" class="btn btn-primary w-100 mt-3 rounded-pill shadow">تطبيق الفلاتر</button>
             <a href="{{ route('shop.index') }}" class="btn btn-link w-100 text-secondary mt-2 text-decoration-none small">إعادة تعيين</a>
@@ -79,7 +83,7 @@
                         <div class="card-body d-flex flex-column">
                             <h6 class="text-primary small mb-1">{{ $product->category->name ?? 'تصنيف عام' }}</h6>
                             <h5 class="card-title h6 fw-bold text-dark">{{ $product->name }}</h5>
-                            <p class="text-dark fw-bold mb-3 fs-5">{{ number_format($product->price) }} ر.س</p>
+                            <p class="text-dark fw-bold mb-3 fs-5">{{ number_format($product->price) }} ر.ع</p>
 
                             <div class="mt-auto">
                                 <a href="{{ route('shop.show', $product->id) }}" class="btn btn-outline-primary w-100 rounded-pill">

@@ -26,3 +26,4 @@ class AdminMiddleware
         return redirect('/')->with('error', 'عذراً، لا تملك صلاحيات الوصول لهذه الصفحة.');
     }
 }
+}

@@ -78,16 +78,16 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ number_format($item->price, 2) }} ر.س</td>
+                                    <td>{{ number_format($item->price, 2) }} ر.ع</td>
                                     <td>{{ $item->quantity }}</td>
-                                    <td class="text-center fw-bold">{{ number_format($item->price * $item->quantity, 2) }} ر.س</td>
+                                    <td class="text-center fw-bold">{{ number_format($item->price * $item->quantity, 2) }} ر.ع</td>
                                 </tr>
                                 @endforeach
                             </tbody>
                             <tfoot class="table-light">
                                 <tr>
                                     <td colspan="3" class="text-end fw-bold py-3 fs-5">إجمالي الطلب:</td>
-                                    <td class="text-center fw-bold text-success py-3 fs-5">{{ number_format($order->total_price, 2) }} ر.س</td>
+                                    <td class="text-center fw-bold text-success py-3 fs-5">{{ number_format($order->total_price, 2) }} ر.ع</td>
                                 </tr>
                             </tfoot>
                         </table>

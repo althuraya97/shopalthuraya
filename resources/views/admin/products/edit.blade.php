@@ -27,20 +27,35 @@
                         </div>
                     @endif
 
+                    {{-- تم دمج كل شيء في هذا النموذج لضمان الحفظ الصحيح --}}
                     <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
                         <div class="row">
                             <div class="col-md-8">
+                                {{-- الصف الأول: رقم المنتج واسم المنتج --}}
                                 <div class="row">
+                                    {{-- رقم المنتج (ID) --}}
+                                    <div class="col-md-4 mb-4">
+                                        <label class="form-label fw-bold text-secondary">رقم المنتج (ID)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fas fa-fingerprint"></i></span>
+                                            <input type="text" class="form-control bg-light" value="#{{ $product->id }}" readonly>
+                                        </div>
+                                        <small class="text-muted">مرجع تلقائي غير قابل للتعديل.</small>
+                                    </div>
+
                                     {{-- اسم المنتج --}}
-                                    <div class="col-md-6 mb-4">
+                                    <div class="col-md-8 mb-4">
                                         <label class="form-label fw-bold">اسم المنتج <span class="text-danger">*</span></label>
                                         <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                                                value="{{ old('name', $product->name) }}" required>
                                     </div>
+                                </div>
 
+                                {{-- الصف الثاني: السعر والمخزون --}}
+                                <div class="row">
                                     {{-- السعر --}}
                                     <div class="col-md-6 mb-4">
                                         <label class="form-label fw-bold">السعر الحالي</label>
@@ -49,6 +64,17 @@
                                             <input type="number" step="0.01" name="price" class="form-control"
                                                    value="{{ old('price', $product->price) }}" required>
                                         </div>
+                                    </div>
+
+                                    {{-- كمية المخزون (Stock) --}}
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label fw-bold text-success">كمية المخزون المتوفرة <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-success text-white"><i class="fas fa-cubes"></i></span>
+                                            <input type="number" name="stock" class="form-control @error('stock') is-invalid @enderror"
+                                                   value="{{ old('stock', $product->stock) }}" placeholder="مثال: 50" required min="0">
+                                        </div>
+                                        <small class="text-muted">عند وصولها لـ 0، سيظهر المنتج كـ "نافد".</small>
                                     </div>
                                 </div>
 
@@ -67,7 +93,6 @@
                                             @endforeach
                                         @endforeach
                                     </select>
-                                    <small class="text-muted">هذا هو القسم الرئيسي الذي يظهر فيه المنتج للمتسوقين.</small>
                                 </div>
 
                                 {{-- الأحجام --}}
@@ -100,52 +125,6 @@
 
                         <hr class="my-4">
 
-                        {{-- قسم إدارة التصنيفات الإضافية --}}
-                        <div class="card shadow-none border mb-4">
-                            <div class="card-header bg-dark text-white d-flex align-items-center py-2">
-                                <i class="fas fa-tags ms-2"></i> <h6 class="mb-0">التصنيفات الإضافية (وسوم المنتج)</h6>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive" style="max-height: 250px;">
-                                    <table class="table table-hover align-middle text-center mb-0">
-                                        <thead class="table-light sticky-top">
-                                            <tr>
-                                                <th class="text-right pr-4">اسم التصنيف</th>
-                                                <th>الحالة</th>
-                                                <th>الإجراء</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($subCategories as $subCat)
-                                                @php $isAttached = $product->subCategories->contains($subCat->id); @endphp
-                                                <tr>
-                                                    <td class="text-right pr-4 fw-semibold">{{ $subCat->name }}</td>
-                                                    <td>
-                                                        @if($isAttached)
-                                                            <span class="badge rounded-pill bg-success-subtle text-success border border-success px-3">مرتبط</span>
-                                                        @else
-                                                            <span class="badge rounded-pill bg-secondary-subtle text-secondary border px-3">غير مرتبط</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        <form action="{{ route('admin.products.toggleCategory', $product->id) }}" method="POST" class="d-inline">
-                                                            @csrf
-                                                            <input type="hidden" name="sub_category_id" value="{{ $subCat->id }}">
-                                                            <input type="hidden" name="action" value="{{ $isAttached ? 'detach' : 'attach' }}">
-                                                            <button type="submit" class="btn btn-sm {{ $isAttached ? 'btn-outline-danger' : 'btn-outline-success' }} px-3 rounded-pill">
-                                                                <i class="fas {{ $isAttached ? 'fa-minus-circle' : 'fa-plus-circle' }} ms-1"></i>
-                                                                {{ $isAttached ? 'إزالة' : 'ربط' }}
-                                                            </button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
                         {{-- الوصف وسياسة الإرجاع --}}
                         <div class="row">
                             <div class="col-md-6 mb-4">
@@ -162,7 +141,7 @@
                         <div class="d-flex justify-content-end gap-2 mt-4 border-top pt-4">
                             <a href="{{ route('admin.products.index') }}" class="btn btn-light border px-4">إلغاء</a>
                             <button type="submit" class="btn btn-primary px-5 shadow">
-                                <i class="fas fa-save ms-2"></i> حفظ التغييرات
+                                <i class="fas fa-save ms-2"></i> حفظ كافة التغييرات
                             </button>
                         </div>
                     </form>
@@ -174,7 +153,6 @@
 
 @push('scripts')
 <script>
-    // سكريبت معاينة الصورة فور تغييرها
     document.getElementById('image-input').onchange = evt => {
         const [file] = evt.target.files;
         if (file) {
